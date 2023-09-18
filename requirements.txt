@@ -1,0 +1,11 @@
+pandas~=1.4.4
+matplotlib~=3.5.2
+numpy~=1.21.5
+pillow~=9.2.0
+scikit-image~=0.19.2
+scikit-learn~=1.2.1
+scipy~=1.9.1
+imutils
+kornia
+torchstain
+openpyxl
