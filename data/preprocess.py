@@ -1,6 +1,5 @@
 import json
 import os
-import cv2
 import argparse
 
 import pandas as pd
@@ -9,6 +8,7 @@ import numpy as np
 from skimage import io
 from utils import ColourNormalization
 from constants import *
+from PIL import Image
 
 
 def patch_tupac(patch_size=500):
@@ -33,7 +33,7 @@ def patch_tupac(patch_size=500):
             rois = [ID for ID in rois if ID != 'Thumbs.db']
 
             for i_roi in rois:
-                im = cv2.imread(PATH_TUPAC_RAW_IMAGES + i_fold + '/' + i_case + '/' + i_roi)
+                im = np.array(Image.open(PATH_TUPAC_RAW_IMAGES + i_fold + '/' + i_case + '/' + i_roi))
 
                 mask = np.zeros((im.shape[0], im.shape[1]))
                 if os.path.isfile(PATH_TUPAC_RAW_GT + i_case + '/' + i_roi[:-4] + '.csv'):
@@ -52,10 +52,14 @@ def patch_tupac(patch_size=500):
                         patch = im[y:y + patch_size, x:x + patch_size, :]
                         patch_mask = mask[y:y + patch_size, x:x + patch_size]
 
-                        cv2.imwrite(PATH_TUPAC_PROCESSED + 'images/' + id + '.png', patch)
+                        if not os.path.isfile(PATH_TUPAC_PROCESSED + 'images/' + id + '.png'):
+                            Image.fromarray(patch).save(PATH_TUPAC_PROCESSED + 'images/' + id + '.png')
 
                         if np.max(patch_mask) == 1:
-                            cv2.imwrite(PATH_TUPAC_PROCESSED + 'masks/' + id + '.png', patch_mask*255)
+                            if not os.path.isfile(PATH_TUPAC_PROCESSED + 'masks/' + id + '.png'):
+                                Image.fromarray(patch_mask * 255).convert("L").save(
+                                    PATH_TUPAC_PROCESSED + 'masks/' + id + '.png')
+
                         y += patch_size
                     x += patch_size
 
@@ -89,7 +93,7 @@ def patch_midog(patch_size=500, filter_hard_positives=False):
         gt_sample = gt_table[gt_table["image_id"] == slide_id]
 
         # Load image
-        im = cv2.imread(PATH_MIDOG21_RAW_IMAGES + i_slide)
+        im = np.array(Image.open(PATH_MIDOG21_RAW_IMAGES + i_slide))
 
         # Create mask and asign labels
         mask = np.zeros((im.shape[0], im.shape[1]))
@@ -110,11 +114,89 @@ def patch_midog(patch_size=500, filter_hard_positives=False):
                 patch_mask = mask[y:y + patch_size, x:x + patch_size]
 
                 if not os.path.isfile(PATH_MIDOG21_PROCESSED + 'images/' + id + '.png'):
-                    cv2.imwrite(PATH_MIDOG21_PROCESSED + 'images/' + id + '.png', patch)
+                    Image.fromarray(patch).save(PATH_MIDOG21_PROCESSED + 'images/' + id + '.png')
 
                 if np.max(patch_mask) == 1:
                     if not os.path.isfile(PATH_MIDOG21_PROCESSED + id_masks + id + '.png'):
-                        cv2.imwrite(PATH_MIDOG21_PROCESSED + id_masks + id + '.png', patch_mask * 255)
+                        Image.fromarray(patch_mask * 255).convert("L").save(PATH_MIDOG21_PROCESSED + id_masks + id + '.png')
+                y += patch_size
+            x += patch_size
+
+
+def patch_CCMCT(patch_size=500):
+    import openslide
+    from skimage.filters import threshold_otsu
+
+    slides = sorted(os.listdir(PATH_CCMCT_RAW_IMAGES))[0:150]
+    gt = json.load(open(PATH_CCMCT_RAW_GT))
+    gt_table = pd.DataFrame(gt["annotations"])
+
+    # Get only mitotic figures
+    gt_table = gt_table[gt_table["category_id"] == 2]
+    id_masks = "masks/"
+
+    # Insert slide id
+    gt_table["slides"] = [CCMCT_wsi2id_lookup_dict[i] for i in list(np.int16(gt_table["image_id"].values))]
+
+    if not os.path.exists(PATH_CCMCT_PROCESSED + 'images/'):
+        os.makedirs(PATH_CCMCT_PROCESSED + 'images/')
+    if not os.path.exists(PATH_CCMCT_PROCESSED + id_masks):
+        os.makedirs(PATH_CCMCT_PROCESSED + id_masks)
+
+    c = 0
+    for i_slide in slides:
+        print("Case " + str(c+1) + "/" + str(len(slides)), end='\n')
+        c += 1
+
+        # Get sample id
+        slide_id = i_slide.split(".")[0]
+
+        # Get annotated mitosis from the target slide
+        gt_sample = gt_table[gt_table["slides"] == slide_id]
+
+        # Openslide object from curent slide
+        slide = openslide.open_slide(PATH_CCMCT_RAW_IMAGES + i_slide)
+
+        # Background mask via otsu - using low magnification to get the threshold
+        im_intensity = np.mean(np.array(slide.read_region(level=slide.level_count - 1,
+                                                          location=(0, 0),
+                                                          size=slide.level_dimensions[slide.level_count - 1]).convert("RGB")), -1)
+        thresh = threshold_otsu(im_intensity)
+
+        # Create mask and asign labels
+        mask = np.zeros((slide.level_dimensions[0][1], slide.level_dimensions[0][0]), dtype=np.int8)
+
+        # Insert annotations into mask
+        for i_annotation in range(len(gt_sample)):
+            bbox = gt_sample["bbox"].values[i_annotation]
+            mask[int(np.mean([bbox[1], bbox[3]])), int(np.mean([bbox[0], bbox[2]]))] = 1
+
+        # Extract patches
+        x, y = 0, 0
+        while x + patch_size < slide.level_dimensions[0][0]:
+            y = 0
+            while y + patch_size < slide.level_dimensions[0][1]:
+                print("y: " + str(y) + "/" + str(slide.level_dimensions[0][1]) +
+                      " | x: " + str(x) + "/" + str(slide.level_dimensions[0][0]), end="\r")
+                id = str(slide_id) + '_0_' + str(x) + '_' + str(y)
+
+                patch = np.array(slide.read_region(level=0, location=(x, y),
+                                                   size=(patch_size, patch_size)).convert("RGB"))
+                tissue_mask = - np.float32(patch.mean(-1) > thresh) + 1
+
+                if tissue_mask.mean() <= 0.2:
+                    y += patch_size
+                    continue
+
+                patch_mask = mask[y:y + patch_size, x:x + patch_size]
+
+                if not os.path.isfile(PATH_CCMCT_PROCESSED + 'images/' + id + '.png'):
+                    Image.fromarray(patch).save(PATH_CCMCT_PROCESSED + 'images/' + id + '.png')
+
+                if np.max(patch_mask) == 1:
+                    if not os.path.isfile(PATH_CCMCT_PROCESSED + id_masks + id + '.png'):
+                        Image.fromarray(patch_mask * 255).convert("L").save(
+                            PATH_CCMCT_PROCESSED + id_masks + id + '.png')
                 y += patch_size
             x += patch_size
 
@@ -123,7 +205,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     # Directories and partition
-    parser.add_argument("--dataset", default='MIDOG21', type=str)
+    parser.add_argument("--dataset", default='CCMCT', type=str, help=" TUPAC16 | MIDOG21 | CCMCT | ")
     parser.add_argument('--extract_patches', default=True, type=lambda x: (str(x).lower() == 'true'))
     parser.add_argument('--stain_norm', default=False, type=lambda x: (str(x).lower() == 'true'))
     parser.add_argument('--filter_hard_positives', default=True, type=lambda x: (str(x).lower() == 'true'))
@@ -137,6 +219,10 @@ if __name__ == '__main__':
         PATH_IMAGES, PATH_IMAGES_NORM = PATH_MIDOG21_PROCESSED + 'images/', PATH_MIDOG21_PROCESSED + 'images_norm/'
         patch = patch_midog
         args_patching = [500, args.filter_hard_positives]
+    elif args.dataset == "CCMCT":
+        PATH_IMAGES, PATH_IMAGES_NORM = PATH_CCMCT_PROCESSED + 'images/', PATH_CCMCT_PROCESSED + 'images_norm/'
+        patch = patch_CCMCT()
+        args_patching = [500]
     else:
         print("Dataset not supported... ")
         PATH_IMAGES, PATH_IMAGES_NORM, patch, args_patching = None, None, None, None

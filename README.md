@@ -19,6 +19,12 @@ conda activate uts_env
 conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=11.6 -c pytorch -c conda-forge
 ```
 
+* If you are using CCMT dataset, you will need openslide for reading wsis.
+
+```
+conda install -c conda-forge openslide-python
+```
+
 * Clone and install requirements.
 
 ```
@@ -42,6 +48,7 @@ For proper usage, training and validation of the proposed UTS method, please dow
 ```
 python data/preprocess.py --dataset TUPAC16 --extract_patches True --stain_norm False
 python data/preprocess.py --dataset MIDOG21 --extract_patches True --stain_norm False
+python data/preprocess.py --dataset CCMCT --extract_patches True --stain_norm False
 ```
 
 3. Stain normalization using Macenko's method - This process might take a while... be patient!
@@ -49,6 +56,7 @@ python data/preprocess.py --dataset MIDOG21 --extract_patches True --stain_norm 
 ```
 python data/preprocess.py --dataset TUPAC16 --extract_patches False --stain_norm True
 python data/preprocess.py --dataset MIDOG21 --extract_patches False --stain_norm True
+python data/preprocess.py --dataset CCMCT --extract_patches False --stain_norm True
 ```
 
 ## UTS Training

@@ -29,6 +29,9 @@ class Dataset(object):
         elif "MIDOG21" in dataset_id:
             val_id, test_id = MIDOG21_ID_VAL, MIDOG21_ID_TEST
             dir_dataset = PATH_MIDOG21_PROCESSED
+        elif "CCMCT" in dataset_id:
+            val_id, test_id = CCMCT_ID_VAL, CCMCT_ID_TEST
+            dir_dataset = PATH_CCMCT_PROCESSED
         else:
             print("Processing dataset not valid... ")
             return
@@ -62,26 +65,34 @@ class Dataset(object):
         if self.partition == 'train':
             idx = np.in1d([ID.split('_')[0] for ID in self.images], val_id + test_id)
             self.images = [self.images[i] for i in range(self.images.__len__()) if not idx[i]]
+            if "CCMCT" in dataset_id:
+                self.images = random.sample(self.images, len(self.images)//2)
+                print(len(self.images))
         elif self.partition == 'val':
             idx = np.in1d([ID.split('_')[0] for ID in self.images], val_id)
             self.images = [self.images[i] for i in range(self.images.__len__()) if idx[i]]
+            if "CCMCT" in dataset_id:
+                self.images = random.sample(self.images, len(self.images) // 20)
+                print(len(self.images))
         elif self.partition == 'test':
             idx = np.in1d([ID.split('_')[0] for ID in self.images], test_id)
             self.images = [self.images[i] for i in range(self.images.__len__()) if idx[i]]
+            self.images = random.sample(self.images, len(self.images) // 20)
+            print(len(self.images))
         else:
             print('Wrong partition', end='\n')
 
         if self.preallocate:
             # Pre-load images
-            self.X = np.zeros((len(self.images), input_shape[0], input_shape[1], input_shape[2]))
-            self.M = np.zeros((len(self.images), input_shape[1], input_shape[2]))
+            self.X = np.zeros((len(self.images), input_shape[0], input_shape[1], input_shape[2]), dtype=np.float16)
+            self.M = np.zeros((len(self.images), input_shape[1], input_shape[2]), dtype=np.float16)
             self.Y = np.zeros((len(self.images), labels))
             self.N = np.zeros((len(self.images), 1))
 
             for iImage in np.arange(0, len(self.images)):
                 print(str(iImage + 1) + '/' + str(len(self.images)), end='\r')
 
-                im = np.array(io.imread(dir_dataset + self.dir_images + '/' + self.images[iImage]))
+                im = np.array(io.imread(dir_dataset + self.dir_images + '/' + self.images[iImage]), dtype=np.float16)
                 im = imutils.resize(im, height=self.input_shape[1])
 
                 # Stain Normalization
@@ -119,7 +130,7 @@ class Dataset(object):
     def __getitem__(self, index):
         'Generates one sample of data'
 
-        x = self.X[index, :, :, :].astype(np.float32)
+        x = self.X[index, :, :, :].astype(np.float16)
         m = self.M[index, :, :].astype(np.int)
         y = self.Y[index, :].astype(np.int)
 

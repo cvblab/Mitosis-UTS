@@ -97,11 +97,13 @@ def evaluate(dir_images, cases, dir_model, patch_size=500, name_out="test", save
             whole_mask_pred = np.zeros((nRows, nCols))
             for iCol in np.arange(0, nCols, patch_size, dtype=int):
                 for iRow in np.arange(0, nRows, patch_size, dtype=int):
-                    idx = images_region.index(case + '_' + iRegion + '_' + str(iCol) + '_' + str(iRow) + '.png')
+                    id = case + '_' + iRegion + '_' + str(iCol) + '_' + str(iRow) + '.png'
+                    if id in images_region:
+                        idx = images_region.index(id)
 
-                    whole_image[:, iRow:iRow+patch_size, iCol:iCol+patch_size] = images_all[idx]
-                    whole_mask[iRow:iRow + patch_size, iCol:iCol + patch_size] = mask_all[idx]
-                    whole_mask_pred[iRow:iRow + patch_size, iCol:iCol + patch_size] = mask_pred_all[idx]
+                        whole_image[:, iRow:iRow+patch_size, iCol:iCol+patch_size] = images_all[idx]
+                        whole_mask[iRow:iRow + patch_size, iCol:iCol + patch_size] = mask_all[idx]
+                        whole_mask_pred[iRow:iRow + patch_size, iCol:iCol + patch_size] = mask_pred_all[idx]
 
             # Visualize
             loc_test_metrics = evaluate_motisis_localization(X=np.expand_dims(whole_image, 0),
@@ -135,7 +137,7 @@ if __name__ == '__main__':
     parser.add_argument("--dataset", default='TUPAC16', type=str, help=" TUPAC16 / MIDOG21 ")
     parser.add_argument("--dir_model", default='./local_data/results/TUPAC16_UTS_teacher_weakAugm_locCons/',
                         type=str)
-    parser.add_argument('--save_visualization', default=True, type=lambda x: (str(x).lower() == 'true'))
+    parser.add_argument('--save_visualization', default=False, type=lambda x: (str(x).lower() == 'true'))
     parser.add_argument('--batch_norm_adaptation', default=False, type=lambda x: (str(x).lower() == 'true'))
     args = parser.parse_args()
 
@@ -144,10 +146,17 @@ if __name__ == '__main__':
         dir_images = PATH_TUPAC_PROCESSED
         cases = TUPAC16_ID_TRAIN
         dataset_implemented = True
+        patch_size = 500
     elif args.dataset == "MIDOG21":
         dir_images = PATH_MIDOG21_PROCESSED
         cases = MIDOG21_ID_TEST
         dataset_implemented = True
+        patch_size = 500
+    elif args.dataset == "CCMCT":
+        dir_images = PATH_CCMCT_PROCESSED
+        cases = CCMCT_ID_TEST
+        dataset_implemented = True
+        patch_size = 224
     else:
         print("Specified dataset not implemented for evaluation...", end="\n")
         dataset_implemented, dir_images, cases = False, None, None
@@ -155,5 +164,5 @@ if __name__ == '__main__':
     # Evauate
     if dataset_implemented:
         print("Evaluation mitosis localization at the slide level...", end="\n")
-        evaluate(dir_images, cases, args.dir_model, patch_size=500, name_out="test_" + args.dataset,
+        evaluate(dir_images, cases, args.dir_model, patch_size=patch_size, name_out="test_" + args.dataset,
                  save_visualization=args.save_visualization, batch_norm_adaptation=args.batch_norm_adaptation)
