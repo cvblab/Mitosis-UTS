@@ -42,6 +42,7 @@ For proper usage, training and validation of the proposed UTS method, please dow
 * [TUPAC16-auxiliary](https://tupac.grand-challenge.org/Dataset/) - include the dataset at `./local_data/datasets/TUPAC16/`.
 * [MITOS-ATYPIA14](https://mitos-atypia-14.grand-challenge.org/Donwload/) - include the dataset at `./local_data/datasets/MITOS14/`.
 * [MIDOG21](https://imig.science/midog2021/download-dataset/) - include the dataset at `./local_data/datasets/MIDOG21/`.
+* [CCMCT](https://github.com/DeepMicroscopy/MITOS_WSI_CCMCT/) - include the dataset at `./local_data/datasets/CCMCT/`.
 
 2. Extract patches from high-power field views.
 
