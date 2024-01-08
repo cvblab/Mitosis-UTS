@@ -7,7 +7,7 @@
 mitosis are in the image! - follow a **weakly supervised strategy** -, and check **di-similarities** between annotations and
 predictions for training a **distilled Student model**.
 
-You can find more details on the following [manuscript](https://www.sciencedirect.com/science/article/abs/pii/S0895611124000053?via%3Dihub).
+You can find more details in the following [manuscript](https://www.sciencedirect.com/science/article/abs/pii/S0895611124000053?via%3Dihub).
 
 ## Installation
 
