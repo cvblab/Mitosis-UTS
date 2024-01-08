@@ -7,7 +7,7 @@
 mitosis are in the image! - follow a **weakly supervised strategy** -, and check **di-similarities** between annotations and
 predictions for training a **distilled Student model**.
 
-You can find more details on the following [manuscript]().
+You can find more details on the following [manuscript](https://www.sciencedirect.com/science/article/abs/pii/S0895611124000053?via%3Dihub).
 
 ## Installation
 
@@ -84,14 +84,14 @@ If you find this repository useful, please consider citing this paper:
 @article{UTS2023,
   title={Uninformed Teacher-Student for hard-sample distillation in weakly supervised mitosis localization},
   author={Claudio Fernandez-Martín and Julio Silva-Rodriguez and Umay Kiraz and Sandra Morales and Emiel A.M. Janssen and Valery Naranjo},
-  journal={ArXiv Preprint},
-  year={2023}
+  journal={Computerized Medical Imaging and Graphics},
+  year={2024}
 }
 ```
 
 ## TO-DOs
 
-- [ ] Add paper link.
+- [x] Add paper link.
 - [ ] Add pre-processing code for MITOS14.
 - [ ] Release pre-trained weights.
 
