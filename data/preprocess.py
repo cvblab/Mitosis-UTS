@@ -21,7 +21,7 @@ def patch_tupac(patch_size=500):
         os.makedirs(PATH_TUPAC_PROCESSED + 'masks/')
 
     c = 0
-    for i_fold in folds:
+    for i_fold in folds:  # e.g. ["mitoses_train_image_data_part_1", "mitoses_train_image_data_part_2"]
         c += 1
 
         cases, cc = os.listdir(PATH_TUPAC_RAW_IMAGES + i_fold + '/'), 0
@@ -205,9 +205,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     # Directories and partition
-    parser.add_argument("--dataset", default='CCMCT', type=str, help=" TUPAC16 | MIDOG21 | CCMCT | ")
+    parser.add_argument("--dataset", default='TUPAC16', type=str, help=" TUPAC16 | MIDOG21 | CCMCT | ")
     parser.add_argument('--extract_patches', default=True, type=lambda x: (str(x).lower() == 'true'))
-    parser.add_argument('--stain_norm', default=False, type=lambda x: (str(x).lower() == 'true'))
+    parser.add_argument('--stain_norm', default=True, type=lambda x: (str(x).lower() == 'true'))
     parser.add_argument('--filter_hard_positives', default=True, type=lambda x: (str(x).lower() == 'true'))
     args = parser.parse_args()
 

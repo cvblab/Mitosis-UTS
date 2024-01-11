@@ -39,10 +39,12 @@ For proper usage, training and validation of the proposed UTS method, please dow
 
 1. Download the datasets.
 
-* [TUPAC16-auxiliary](https://tupac.grand-challenge.org/Dataset/) - include the dataset at `./local_data/datasets/TUPAC16/`.
+* [TUPAC16-auxiliary(mitoses)](https://tupac.grand-challenge.org/Dataset/) - include the dataset at `./local_data/datasets/TUPAC16/`.
 * [MITOS-ATYPIA14](https://mitos-atypia-14.grand-challenge.org/Donwload/) - include the dataset at `./local_data/datasets/MITOS14/`.
 * [MIDOG21](https://imig.science/midog2021/download-dataset/) - include the dataset at `./local_data/datasets/MIDOG21/`.
 * [CCMCT](https://github.com/DeepMicroscopy/MITOS_WSI_CCMCT/) - include the dataset at `./local_data/datasets/CCMCT/`.
+
+Please, check `./local_data/datasets/README.md` for the dataset organization details.
 
 2. Extract patches from high-power field views.
 
@@ -53,6 +55,10 @@ python data/preprocess.py --dataset CCMCT --extract_patches True --stain_norm Fa
 ```
 
 3. Stain normalization using Macenko's method - This process might take a while... be patient!
+
+* First, you must prepare the reference image for stain normalization. To do so, check `./local_data/color_norm/README.md`.
+
+*  Second, run:
 
 ```
 python data/preprocess.py --dataset TUPAC16 --extract_patches False --stain_norm True

@@ -1,5 +1,5 @@
 # Stain normalization image
-PATH_NORM_IMAGE = "./local_data/color_norm/sample.jpg"
+PATH_NORM_IMAGE = "./local_data/color_norm/sample.tif"
 
 # Path with datasets
 PATH_DATASETS = "./local_data/datasets/"
@@ -41,22 +41,22 @@ CCMCT_ID_TEST = ['be10fa37ad6e88e1f406', 'f3741e764d39ccc4d114', 'c86cd41f96331a
                  '8c9f9618fcaca747b7c3', 'c91a842257ed2add5134', 'dd4246ab756f6479c841', 'f26e9fcef24609b988be',
                  '96274538c93980aad8d6', 'add0a9bbc53d1d9bac4c', '1018715d369dd0df2fc0']
 CCMCT_ID_VAL = ["3f2e034c75840cb901e6", "2efb541724b5c017c503", "70ed18cd5f806cf396f0"]
-CCMCT_wsi2id_lookup_dict = {1 : 'c91a842257ed2add5134', 2 : 'add0a9bbc53d1d9bac4c',
-                            3 : '96274538c93980aad8d6', 4 : 'c3eb4b8382b470dd63a9',
-                            6 : 'f26e9fcef24609b988be', 7 : 'fff27b79894fe0157b08',
-                            8 : '2f17d43b3f9e7dacf24c', 9 : '8c9f9618fcaca747b7c3',
-                            11 : 'be10fa37ad6e88e1f406', 12 : 'ac1168b2c893d2acad38',
-                            13 : 'a0c8b612fe0655eab3ce',  14 : '34eb28ce68c1106b2bac',
-                            15 : '3f2e034c75840cb901e6', 17 : '8bebdd1f04140ed89426',
-                            18 : 'dd4246ab756f6479c841', 19 : '39ecf7f94ed96824405d',
-                            20 : '1018715d369dd0df2fc0', 21 : '20c0753af38303691b27',
-                            22 : '2efb541724b5c017c503', 23 : '2f2591b840e83a4b4358',
-                            24 : '91a8e57ea1f9cb0aeb63',25 : '066c94c4c161224077a9',
-                            26 : '9374efe6ac06388cc877', 27 : '552c51bfb88fd3e65ffe',
-                            28 : 'dd6dd0d54b81ebc59c77', 29 : '285f74bb6be025a676b6',
-                            30 : 'c86cd41f96331adf3856', 31 : 'f3741e764d39ccc4d114',
-                            32 : '2e611073cff18d503cea', 34 : 'ce949341ba99845813ac',
-                            35 : '70ed18cd5f806cf396f0', 36 : '0e56fd11a762be0983f0'}
+CCMCT_wsi2id_lookup_dict = {1: 'c91a842257ed2add5134',   2: 'add0a9bbc53d1d9bac4c',
+                            3: '96274538c93980aad8d6',   4: 'c3eb4b8382b470dd63a9',
+                            6: 'f26e9fcef24609b988be',   7: 'fff27b79894fe0157b08',
+                            8: '2f17d43b3f9e7dacf24c',   9: '8c9f9618fcaca747b7c3',
+                            11: 'be10fa37ad6e88e1f406', 12: 'ac1168b2c893d2acad38',
+                            13: 'a0c8b612fe0655eab3ce', 14: '34eb28ce68c1106b2bac',
+                            15: '3f2e034c75840cb901e6', 17: '8bebdd1f04140ed89426',
+                            18: 'dd4246ab756f6479c841', 19: '39ecf7f94ed96824405d',
+                            20: '1018715d369dd0df2fc0', 21: '20c0753af38303691b27',
+                            22: '2efb541724b5c017c503', 23: '2f2591b840e83a4b4358',
+                            24: '91a8e57ea1f9cb0aeb63', 25: '066c94c4c161224077a9',
+                            26: '9374efe6ac06388cc877', 27: '552c51bfb88fd3e65ffe',
+                            28: 'dd6dd0d54b81ebc59c77', 29: '285f74bb6be025a676b6',
+                            30: 'c86cd41f96331adf3856', 31: 'f3741e764d39ccc4d114',
+                            32: '2e611073cff18d503cea', 34: 'ce949341ba99845813ac',
+                            35: '70ed18cd5f806cf396f0', 36: '0e56fd11a762be0983f0'}
 
 
 # Path for results

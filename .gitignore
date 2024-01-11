@@ -1,3 +1,6 @@
 MITOS_WSI_CCMCT
-local_data/datasets
+local_data/datasets/TUPAC16
+local_data/datasets/MIDOG21
+local_data/color_norm/sample.tif
 .idea
+data/__pycache__
